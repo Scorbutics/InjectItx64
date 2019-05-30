@@ -1,0 +1,3 @@
+[submodule "external/asm_utils"]
+	path = external/asm_utils
+	url = https://github.com/Scorbutics/ASMUtils.git

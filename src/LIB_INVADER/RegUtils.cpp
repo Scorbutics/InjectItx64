@@ -94,7 +94,7 @@ void GetKeyPathFromHKEY(HMODULE dll, HKEY key, TCHAR* keyPath)
         //Premièrement, nous allons récupérer une fonction de "ntdll.dll", on a donc besoin d'un LoadLibrary
         if(dll == NULL)
         {
-            dll = LoadLibrary(L"ntdll.dll");
+            dll = LoadLibraryW(L"ntdll.dll");
             lazyLoad = 1;
         }
 

@@ -28,7 +28,7 @@ ANSI_STRING CreateAnsiStringDataFromUnicodeString(UNICODE_STRING uni)
 ANSI_STRING CreateAnsiStringDataFromUnicode(WCHAR* str, unsigned int size)
 {
     ANSI_STRING result = CreateAnsiStringData(size);
-    utf8_encode(str, size, result.Buffer, size);
+    utf8_encode(reinterpret_cast<LPCTSTR>(str), size, result.Buffer, size);
 
     return result;
 }

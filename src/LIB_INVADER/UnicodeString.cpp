@@ -16,7 +16,7 @@ void utf8_encode(LPCTSTR wstr, unsigned int size, char* output, unsigned int out
     if(outputMaxLength == 0)
         return;
 
-    WideCharToMultiByte(CP_UTF8, 0, wstr, size, output, outputMaxLength, NULL, NULL);
+    WideCharToMultiByte(CP_UTF8, 0, reinterpret_cast<LPCWCH>(wstr), size, output, outputMaxLength, NULL, NULL);
     output[outputMaxLength-1] = '\0';
 }
 

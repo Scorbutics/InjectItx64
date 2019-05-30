@@ -260,7 +260,7 @@ DWORD WaitReturnValueFromThread(HANDLE pHandle, PDWORD exitCode) {
 
 
 DWORD Queryx86ProcAddress(LPWSTR moduleName, LPWSTR procName) {
-	STARTUPINFO si;
+	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
 
 	ZeroMemory(&si, sizeof(si));
@@ -269,9 +269,9 @@ DWORD Queryx86ProcAddress(LPWSTR moduleName, LPWSTR procName) {
 
 	WCHAR cmdLine[2048] = { 0 };
 	DWORD result;
-	wsprintf(cmdLine, L"Getx86Proc.exe %s %s", moduleName, procName);
+	wsprintfW(cmdLine, L"Getx86Proc.exe %s %s", moduleName, procName);
 
-	if (!CreateProcess(
+	if (!CreateProcessW(
 		NULL,
 		cmdLine,
 		NULL,           // Process handle not inheritable
@@ -424,7 +424,7 @@ PVOID InjectLoadLibraryInMem(HANDLE pHandle, const char* fullDllPath, PVOID dllF
 		ASMUtils::reverseAddressx64((DWORD64)setCurrentDirectoryA, code + 105 + 5);
 		ASMUtils::reverseAddressx64((DWORD64)outputCurrentDir, code + 115 + 5);
 
-		//ASMUtils::printCode(code, sizeof(code));
+		ASMUtils::printCode(code, sizeof(code));
 
 		gCode = code;
 		codeSize = sizeof(code);
@@ -556,6 +556,11 @@ int InjectDllCreatingSuspendedProcess(const char* processPathName, const char* c
 	int result = InjectDllRemoteThread(GetProcessId(pi.hProcess), dllPathName, method);
 
 	printf("Injection terminated. Restoring EIP/RIP\n");
+	
+	/* Injection OK : process will start with dll loaded, we cleanup everything*/
+	if (result == 1) {
+		system("cls");
+	}
 
 	SuspendThread(pi.hThread);
 
@@ -638,10 +643,10 @@ int InjectDllRemoteThread(DWORD pid, const char * dllPathName, int method) {
 		WaitReturnValueFromThread(threadHandle, &exitCode);
 
 		if (exitCode == 0) {
-			printf("\nLoadLibraryA OK : returned 0\n");
+			printf("LoadLibraryA OK : returned 0\n");
 		}
 		else {
-			printf("\nLoadLibraryA FAILED (%ld) : ", exitCode);
+			printf("LoadLibraryA FAILED (%ld) : ", exitCode);
 			DisplayErrorWithCode(NULL, exitCode);
 			if (exitCode == ERROR_CODE_NOT_VALID_WIN32_APP) {
 				if (!isTargetx64) {
@@ -666,7 +671,7 @@ int InjectDllRemoteThread(DWORD pid, const char * dllPathName, int method) {
 
 int ReleaseDllRemoteThread (DWORD pid, const char* dllPathName, int ntMethodBool)
 {
-    HMODULE hKernel32 = LoadLibrary (L"kernel32.dll");
+    HMODULE hKernel32 = LoadLibraryW(L"kernel32.dll");
     HANDLE hProcess = OpenProcess(PROCESS_CREATE_THREAD | PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, 0, pid);
     LPVOID lpHandle = 0;
 
